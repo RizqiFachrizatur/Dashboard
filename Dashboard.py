@@ -74,4 +74,7 @@ plt.xticks(rotation=0)
 st.pyplot(fig_user)
 
 # Spacer before footer
-st.markdown("<br><hr><br>", unsafe_allow_html=True)e
+st.markdown("<br><hr><br>", unsafe_allow_html=True)
+
+# Footer
+st.markdown("### Analysis by Rizqi Fachrizatur R")
