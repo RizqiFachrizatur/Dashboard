@@ -7,7 +7,7 @@ import seaborn as sns
 st.set_page_config(page_title="Bike Rental Analysis", page_icon="🚴", layout="wide")
 
 # Load data dari file CSV yang telah di-upload
-df_day = pd.read_csv(('https://raw.githubusercontent.com/RizqiFachrizatur/Dasboard/refs/heads/main/day.csv'))
+df_day = pd.read_csv(('https://raw.githubusercontent.com/jonathanchris198/Dasboard-Analisis-Python/refs/heads/main/day.csv'))
 
 # Konversi kolom 'dteday' ke datetime jika belum
 df_day['dteday'] = pd.to_datetime(df_day['dteday'])
