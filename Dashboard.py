@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the dataset
-day_data = pd.read_csv('')
+day_data = pd.read_csv('https://raw.githubusercontent.com/RizqiFachrizatu/Dashboard/refs/heads/main/day.csv')
 
 # Title of the app
 st.title('Bike Rental Analysis: Weather & User Behavior')
