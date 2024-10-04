@@ -3,61 +3,75 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Load the dataset
-day_data = pd.read_csv('https://raw.githubusercontent.com/RizqiFachrizatu/Dashboard/refs/heads/main/day.csv')
+# Theme Dashboard
+st.set_page_config(page_title="Bike Rental Analysis", page_icon="🚴", layout="wide")
 
-# Title of the app
-st.title('Bike Rental Analysis: Weather & User Behavior')
+# Load data dari file CSV yang telah di-upload
+df_day = pd.read_csv(('https://raw.githubusercontent.com/RizqiFachrizatur/Dasboard/refs/heads/main/day.csv'))
 
-# Section 1: Impact of Temperature and Humidity on Total Rentals
-st.header('1. Impact of Temperature and Humidity on Total Rentals')
+# Konversi kolom 'dteday' ke datetime jika belum
+df_day['dteday'] = pd.to_datetime(df_day['dteday'])
 
-# Scatter plots for temperature vs total rentals and humidity vs total rentals
-fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+# Title & Icon
+st.title("🚴 Bike Rental Analysis")
+st.markdown("### Analyzing the Impact of Weather and User Type on Bike Rentals")
 
-# Temperature vs Total Rentals
-sns.scatterplot(ax=axes[0], x=day_data['temp'], y=day_data['cnt'], color='blue')
-axes[0].set_title('Temperature vs Total Rentals')
-axes[0].set_xlabel('Temperature (Normalized)')
-axes[0].set_ylabel('Total Rentals')
+# Sidebar untuk filter tahun
+st.sidebar.title("Filter Data")
+st.sidebar.markdown("Use the filter below to customize the data view:")
+year_filter = st.sidebar.selectbox("Select Year", [2011, 2012])
 
-# Humidity vs Total Rentals
-sns.scatterplot(ax=axes[1], x=day_data['hum'], y=day_data['cnt'], color='green')
-axes[1].set_title('Humidity vs Total Rentals')
-axes[1].set_xlabel('Humidity (Normalized)')
-axes[1].set_ylabel('Total Rentals')
+# Filter data berdasarkan tahun
+if year_filter == 2011:
+    filtered_data = df_day[df_day['yr'] == 0]
+else:
+    filtered_data = df_day[df_day['yr'] == 1]
 
-st.pyplot(fig)
+# Header untuk pertanyaan pertama
+st.markdown("## 🌡️ How Weather Affects Bike Rentals")
 
-# Correlation between temperature, humidity, and total rentals
-st.subheader('Correlation Analysis')
-correlation = day_data[['temp', 'hum', 'cnt']].corr()
-st.write(correlation)
+# Scatter plot untuk pengaruh temperature dan humidity terhadap total rentals
+st.markdown("### Temperature vs Total Rentals")
+fig_temp, ax_temp = plt.subplots()
+sns.scatterplot(x='temp', y='cnt', data=filtered_data, ax=ax_temp, color='#3498DB')
+ax_temp.set_title('Impact of Temperature on Total Bike Rentals', fontsize=16)
+ax_temp.set_xlabel('Temperature (Normalized)', fontsize=12)
+ax_temp.set_ylabel('Total Rentals', fontsize=12)
+plt.grid(True)
+st.pyplot(fig_temp)
 
-# Section 2: Casual vs Registered Users Across Seasons
-st.header('2. Casual vs Registered Users Across Seasons')
+# Grafik kedua untuk humidity
+st.markdown("### Humidity vs Total Rentals")
+fig_hum, ax_hum = plt.subplots()
+sns.scatterplot(x='hum', y='cnt', data=filtered_data, ax=ax_hum, color='#E74C3C')
+ax_hum.set_title('Impact of Humidity on Total Bike Rentals', fontsize=16)
+ax_hum.set_xlabel('Humidity (Normalized)', fontsize=12)
+ax_hum.set_ylabel('Total Rentals', fontsize=12)
+plt.grid(True)
+st.pyplot(fig_hum)
 
-# Boxplot to show distribution of casual and registered users by season
-fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+# Spacer between sections
+st.markdown("<br><hr><br>", unsafe_allow_html=True)
 
-# Casual users by season
-sns.boxplot(ax=axes[0], x=day_data['season'], y=day_data['casual'], palette='Blues')
-axes[0].set_title('Casual Users by Season')
-axes[0].set_xlabel('Season (1: Winter, 2: Spring, 3: Summer, 4: Fall)')
-axes[0].set_ylabel('Casual Users')
+# Header untuk pertanyaan kedua
+st.markdown("## 🧑‍🤝‍🧑 Casual Users vs Registered Users Across Seasons")
 
-# Registered users by season
-sns.boxplot(ax=axes[1], x=day_data['season'], y=day_data['registered'], palette='Greens')
-axes[1].set_title('Registered Users by Season')
-axes[1].set_xlabel('Season (1: Winter, 2: Spring, 3: Summer, 4: Fall)')
-axes[1].set_ylabel('Registered Users')
+# Bar plot perbandingan rentals berdasarkan user type dan season
+season_map = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
+filtered_data['season'] = filtered_data['season'].map(season_map)
 
-st.pyplot(fig)
+# Total rentals by user type and season
+user_season_data = filtered_data.groupby(['season'])[['casual', 'registered']].sum().reset_index()
 
-# Mean and median comparison for casual vs registered users
-st.subheader('Statistical Comparison: Casual vs Registered Users')
-casual_mean = day_data.groupby('season')['casual'].mean()
-registered_mean = day_data.groupby('season')['registered'].mean()
+# Plot untuk user type per season
+st.markdown("### Total Rentals by Casual and Registered Users Across Seasons")
+fig_user, ax_user = plt.subplots()
+user_season_data.plot(kind='bar', x='season', stacked=True, ax=ax_user, color=['#3498DB', '#E74C3C'])
+ax_user.set_title('Total Rentals by Casual and Registered Users', fontsize=16)
+ax_user.set_xlabel('Season', fontsize=12)
+ax_user.set_ylabel('Total Rentals', fontsize=12)
+plt.xticks(rotation=0)
+st.pyplot(fig_user)
 
-st.write('Mean Casual Users by Season:', casual_mean)
-st.write('Mean Registered Users by Season:', registered_mean)
+# Spacer before footer
+st.markdown("<br><hr><br>", unsafe_allow_html=True)e
